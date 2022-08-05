@@ -39,13 +39,15 @@ export default function Cadastro(){
             ...form
         }
 
+        postCadastro(body).catch(({response}) => alert(response.data.message))
+
         postCadastro(body).then(res => {console.log('deu bom', res); navigate('/');setForm({ 
         email: '',
         name: '',
         image:'',
         password:''})})
 
-        postCadastro(body).catch(res => console.log('deu ruim', res))
+        
     }
 
     return (
@@ -53,7 +55,7 @@ export default function Cadastro(){
             <LogoTop>
                 <img src={Logo}/>
             </LogoTop>
-             <Form>
+             <Form  onSubmit={sendForm}>
                
                 <input
                 id='forEmail'
@@ -91,7 +93,7 @@ export default function Cadastro(){
                 placeholder='image'
                 required/>
 
-                <Button onClick={sendForm}>Cadastrar</Button>
+                <Button>Cadastrar</Button>
 
              </Form>
 

@@ -6,9 +6,13 @@ import Button from '../componentes/common/Button'
 import Form from "./common/Form"
 import RodaPe from "./common/RodaPe"
 import { postLogin } from "../services/Trackit"
+import { useContext } from "react"
+import {UserContext} from '../contexts/UserContext';
 
 
 export default function Login(){
+
+    const {imgProfile, setImgProfile} = useContext(UserContext)
 
     const navigate = useNavigate()
 
@@ -18,11 +22,11 @@ export default function Login(){
     })
 
     function handleForm(e){
+
         console.log(e.target.name, e.target.value )
         setForm({
             ...form,
             [e.target.name]: e.target.value
-           
         })
     }
 
@@ -33,11 +37,19 @@ export default function Login(){
             ...form
         }
 
-        postLogin(body).then(res => {console.log('deu bom', res); navigate('/habitos');setForm({ 
+        postLogin(body).then(res => 
+        {console.log('deu bom', res);
+        setForm({ 
         email: '',
-        password:''})})
+        password:''})
+        setImgProfile(res.data.image)
+        
+        const stringData = JSON.stringify(res.data)  
+        localStorage.setItem('useData', stringData) 
+        navigate('/habitos'); 
+    })
 
-        postLogin(body).catch(res => console.log('deu ruim', res, body))
+        postLogin(body).catch(({response}) => alert(response.data.message))
     }
 
     return (
@@ -45,7 +57,7 @@ export default function Login(){
             <LogoTop>
                 <img src={Logo}/>
             </LogoTop>
-             <Form>
+             <Form onSubmit={sendForm}>
                
                 <input
                 id='forEmail'
@@ -65,7 +77,7 @@ export default function Login(){
                 placeholder='senha'
                 required/>
 
-                <Button onClick={sendForm}>Entrar</Button>
+                <Button>Entrar</Button>
 
              </Form>
 
