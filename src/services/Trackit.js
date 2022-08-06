@@ -2,9 +2,17 @@ import axios from 'axios';
 
 const BASE_URL = 'https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/';
 
+const auth = JSON.parse(localStorage.getItem('useData'))
+
+const config = {
+    headers: {
+        'Authorization': `Bearer ${auth.token}`
+    }
+}
 
 function getListarHabitos() {
-    const promise = axios.get(`${BASE_URL}/auth/habits`);
+    console.log(config)
+    const promise = axios.get(`${BASE_URL}/habits`, config);
     return promise;
  }  
 
@@ -14,7 +22,7 @@ function getDeleteHabitos(idHabito) {
 }  
 
 function getBuscaHabitos() {
-    const promise = axios.get(`${BASE_URL}/auth/habits/today`);
+    const promise = axios.get(`${BASE_URL}/auth/habits/today`,);
     return promise;
 }  
 
@@ -35,7 +43,7 @@ function postLogin(body) {
 }
 
 function postCriarHabitos(body) {
-    const promise = axios.post(`${BASE_URL}/auth/habits`,body);
+    const promise = axios.post(`${BASE_URL}/habits`,body, config);
     return promise;
 }
 

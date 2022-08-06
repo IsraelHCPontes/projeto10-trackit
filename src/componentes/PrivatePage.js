@@ -8,7 +8,7 @@ export default function PrivatePage({children}){
    return auth ? 
    <>
    <Header/>
-   {children}
+    {children}
    <Footer/>
    </> 
    :
