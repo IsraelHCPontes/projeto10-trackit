@@ -54,7 +54,6 @@ const [listaHabitos, setListaHabitos] = useState([])
         console.log(diasClickados)
 
         function handleForm(e){
-
             console.log(e.target.value)
             setNomeHabitos(e.target.value)
         }
