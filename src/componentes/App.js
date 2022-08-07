@@ -1,10 +1,12 @@
 import GlobalStyle from "../Assets/styles/GlobalStyles"
 import Habitos from "./Habitos"
 import Login from "./Login"
+import Hoje from "./Hoje"
 import Cadastro from "./Cadastro"
 import { BrowserRouter ,Routes ,Route ,useNavigate  } from "react-router-dom"
 import PrivatePage from "./PrivatePage"
 import UserProvider from "../contexts/UserContext"
+
 
 export default function App(){
     return (
@@ -15,6 +17,7 @@ export default function App(){
                 <Route path="/" element={<Login/>}/>
                 <Route path="/cadastro" element={<Cadastro/>}/> 
                 <Route path="/habitos" element={ <PrivatePage><Habitos/></PrivatePage>}/> 
+                <Route path="/hoje" element={<PrivatePage><Hoje/></PrivatePage>}/>
               </Routes>
            </UserProvider>
         </BrowserRouter>
