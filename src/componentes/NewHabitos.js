@@ -27,6 +27,8 @@ function BotaoDias({dias, index, diasClickados, setDiasClickados}){
 export default function BoxNewHabitos({dias, setBotaoClickado, atualiza, setAtualiza}){
     const [diasClickados, setDiasClickados] = useState([])
     const [nomeHabito, setNomeHabitos] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [disabled, setDesibled] = useState(false)
         
 
     console.log(diasClickados)
@@ -37,6 +39,8 @@ export default function BoxNewHabitos({dias, setBotaoClickado, atualiza, setAtua
     }
     
     function sendForm(e) {
+        setLoading(true)
+        setDesibled(true)
        
         const body ={
             name: `${nomeHabito}`,
@@ -44,14 +48,29 @@ export default function BoxNewHabitos({dias, setBotaoClickado, atualiza, setAtua
         }
         console.log(body)
 
-        postCriarHabitos(body).then((res =>{setBotaoClickado(false);setAtualiza(!atualiza); console.log('cadastrou', res)}))
+        postCriarHabitos(body).then((res =>{
+        setBotaoClickado(false);
+        setAtualiza(!atualiza);
+        console.log('cadastrou', res);
+        setLoading(false)
+        setDesibled(false)}))
     }
     return(
     <BoxNewHabito>
-            <input onChange={handleForm} name='name'placeholder='nome do hábito' />
+            <input onChange={handleForm}
+            name='name'
+            disabled={disabled}
+            placeholder='nome do hábito' />
+
             <Dias>
-            {dias.map((dias, index)=> <BotaoDias diasClickados={diasClickados} setDiasClickados={setDiasClickados}index={index} dias={dias}/>)}
+            {dias.map((dias, index)=>
+             <BotaoDias
+             diasClickados={diasClickados}
+             setDiasClickados={setDiasClickados}
+             index={index}
+             dias={dias}/>)}
             </Dias>
+
             <BottomMenu>
                 <Cancelar onClick={()=>setBotaoClickado(false)}>Cancelar</Cancelar>
                 <button onClick={sendForm}>Salvar</button>

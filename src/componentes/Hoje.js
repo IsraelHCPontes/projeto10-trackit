@@ -4,6 +4,8 @@ import { getBuscaHabitosHoje, postCheckHabitos, postUncheckHabitos} from '../ser
 import { useState, useEffect, useContext } from 'react';
 import dayjs from "dayjs"
 import {UserContext} from '../contexts/UserContext';
+import  BotaoCheck from '../Assets/img/BotaoGrenn.svg'
+import  BotaoUnCheack from '../Assets/img/BotaoGray.svg'
 
 
 export default function Hoje(){
@@ -22,7 +24,7 @@ export default function Hoje(){
     useEffect(() => {
         getBuscaHabitosHoje().then((res)=>
         {setListaHabitos([...res.data]);
-        })},[])  
+        })},[atualiza])  
 
        
 
@@ -71,6 +73,55 @@ export default function Hoje(){
 
     const percentage = ((listaHabitos.filter(({done}) => done).length / listaHabitos.length) * 100).toFixed(0)
 
+    function HabitosHoje({
+        name,
+        currentSequence,
+        highestSequence,
+        id,
+        done,
+        atualiza,
+        setAtualiza}){
+    
+        const [clicked, setClicked] = useState(false)
+        console.log(clicked)
+    
+          
+        function sendCheck({id, done}) {
+            if (done === false) {
+
+               const promess = postCheckHabitos({id})
+               promess.then((res => {console.log('CHECKOU') ;setClicked(true); setAtualiza(!atualiza) }))
+               promess.catch((res) => {console.log('naoCHECKOU')})
+            }
+    
+            if (done === true) {
+                const promess = postUncheckHabitos({id})
+                promess.then((res => {console.log('UNCHECKOU') ;setClicked(false);setAtualiza(!atualiza) }))
+                promess.catch((res) => {console.log('naoUNCHECKOU')})
+            }
+        }
+    
+        
+        return (
+            <BoxHabitos>
+                <Conteudo>
+                    <Esquerda>
+                            <h1>{name}</h1>
+                            <Sequencia currentSequence={currentSequence} highestSequence={highestSequence}>Sequência atual: <span>{currentSequence} dias</span></Sequencia> 
+                            <Recorde currentSequence={currentSequence} highestSequence={highestSequence}>Seu recorde: <span>{highestSequence} dias</span></Recorde>
+                    </Esquerda>
+                    <Direita
+                    clicked={clicked}
+                    setClicked={setClicked}
+                    done={done}
+                    onClick={()=> {sendCheck({id, done, clicked})}}>
+                        <img src={check}/>
+                    </Direita>
+                </Conteudo>
+            </BoxHabitos>
+        )
+    }
+
         
     return(
         <Wrapper>
@@ -84,7 +135,7 @@ export default function Hoje(){
            <ContainerHabitos>
 
            {listaHabitos.map(({
-            name,currentSequence, highestSequence, id, done, atualiza, setAtualiza})=>
+            name,currentSequence, highestSequence, id, done})=>
            <HabitosHoje
            highestSequence={highestSequence}
            currentSequence={currentSequence}
@@ -100,51 +151,7 @@ export default function Hoje(){
     )
 }
 
-function HabitosHoje({
-    name,
-    currentSequence,
-    highestSequence,
-    id,
-    done,
-    atualiza,
-    setAtualiza}){
 
-    const [clicked, setClicked] = useState(false)
-    console.log(done)
-
-      
-    function sendCheck({id, done}) {
-        if (done === false) {
-            postCheckHabitos({id}).then((res => {console.log('CHECKOU') ;setAtualiza(!atualiza)}))
-            postCheckHabitos({id}).catch((res) => {console.log('naoCHECKOU')})
-        }
-
-        if (done === true) {
-            postUncheckHabitos({id}).then((res => {console.log('UNCHECKOU') ;setAtualiza(!atualiza) }))
-            postUncheckHabitos({id}).catch((res) => {console.log('naoUNCHECKOU')})
-        }
-    }
-
-    
-    return (
-        <BoxHabitos>
-            <Conteudo>
-                <Esquerda>
-                        <h1>{name}</h1>
-                        <Sequencia currentSequence={currentSequence} highestSequence={highestSequence}>Sequência atual: <span>{currentSequence} dias</span></Sequencia> 
-                        <Recorde currentSequence={currentSequence} highestSequence={highestSequence}>Seu recorde: <span>{highestSequence} dias</span></Recorde>
-                </Esquerda>
-                <Direita
-                clicked={clicked}
-                setClicked={setClicked}
-                done={done}
-                onClick={()=> {sendCheck({id, done})}}>
-                    <img src={check}/>
-                </Direita>
-            </Conteudo>
-        </BoxHabitos>
-    )
-}
 
 const Wrapper = styled.div`
     margin-top:98px;

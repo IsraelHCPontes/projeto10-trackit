@@ -41,8 +41,8 @@ import { getDeleteHabitos} from '../services/Trackit'
 
     const Dias = styled.div`
     width: 303px;
-    margin-top: 8px;
-`
+    margin-top: 8px;                  
+ `
 
 
 

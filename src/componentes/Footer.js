@@ -10,7 +10,7 @@ export default function Footer(){
    <Wrapper>
         <Habitos onClick={()=>navigate('/habitos')}>Hábitos</Habitos> 
             <BotaoHj/>
-        <Historico>Histórico</Historico>
+        <Historico onClick={()=>navigate('/historico')}>Histórico</Historico>
     </Wrapper>
    )
 }

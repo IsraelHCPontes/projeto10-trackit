@@ -45,6 +45,10 @@ export default function Cadastro(){
         setLoading(true)
         setDesibled(true)
 
+        console.log(body.image)
+
+        
+
         postCadastro(body).catch(({response}) => {
         alert(response.data.message);
         setLoading(false);

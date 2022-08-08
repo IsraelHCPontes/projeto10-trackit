@@ -47,7 +47,11 @@ export default function Login(){
         setForm({ 
         email: '',
         password:''})
-        setImgProfile(res.data.image)
+        
+        const stringImg = JSON.stringify(res.data.image)  
+        localStorage.setItem('useImg', stringImg)
+        
+        
         
         const stringData = JSON.stringify(res.data)  
         localStorage.setItem('useData', stringData) 
