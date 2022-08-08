@@ -77,14 +77,30 @@ function postCriarHabitos(body) {
 }
 
 
-function postCheckHabitos(idHabito, body) {
-    const promise = axios.post(`${BASE_URL}/auth/habits/${idHabito}/check`,body);
+function postCheckHabitos({id, body}) {
+    const auth = JSON.parse(localStorage.getItem('useData'))
+
+    const config = {
+        headers: {
+            'Authorization': `Bearer ${auth.token}`
+        }
+    }
+    console.log('CHECK')
+    const promise = axios.post(`${BASE_URL}habits/${id}/check`,body,config);
     return promise;
 }
  
 
-function postUncheckHabitos(idHabito, body) {
-    const promise = axios.post(`${BASE_URL}/auth/habits/${idHabito}/uncheck`,body);
+function postUncheckHabitos({id, body}) {
+    const auth = JSON.parse(localStorage.getItem('useData'))
+
+    const config = {
+        headers: {
+            'Authorization': `Bearer ${auth.token}`
+        }
+    }
+    console.log('UNCHEK')
+    const promise = axios.post(`${BASE_URL}habits/${id}/uncheck`,body,config);
     return promise;
 } 
 

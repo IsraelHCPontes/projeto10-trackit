@@ -2,16 +2,18 @@ import { Link, useParams, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import styled from "styled-components"
 import Logo from "../Assets/img/Logo.svg"
-import Button from '../componentes/common/Button'
+import {Button, ButtonFacke} from '../componentes/common/Button'
 import Form from "./common/Form"
 import RodaPe from "./common/RodaPe"
 import { postLogin } from "../services/Trackit"
 import { useContext } from "react"
 import {UserContext} from '../contexts/UserContext';
+import { ThreeDots } from  'react-loader-spinner'
 
 
 export default function Login(){
-
+    const [loading, setLoading] = useState(false)
+    const [disabled, setDesibled] = useState(false)
     const {imgProfile, setImgProfile} = useContext(UserContext)
 
     const navigate = useNavigate()
@@ -22,7 +24,7 @@ export default function Login(){
     })
 
     function handleForm(e){
-
+        
         console.log(e.target.name, e.target.value )
         setForm({
             ...form,
@@ -36,6 +38,9 @@ export default function Login(){
         const body ={
             ...form
         }
+        
+        setLoading(true)
+        setDesibled(true)
 
         postLogin(body).then(res => 
         {console.log('deu bom', res);
@@ -46,10 +51,13 @@ export default function Login(){
         
         const stringData = JSON.stringify(res.data)  
         localStorage.setItem('useData', stringData) 
-        navigate('/habitos'); 
+        navigate('/hoje'); 
     })
 
-        postLogin(body).catch(({response}) => alert(response.data.message))
+        postLogin(body).catch(({response}) => 
+        {alert(response.data.message);
+         setLoading(false);
+         setDesibled(false)})
     }
 
     return (
@@ -66,6 +74,7 @@ export default function Login(){
                 name='email'
                 value={form.email}
                 placeholder='email'
+                disabled={disabled}
                 required/>
                 
                 <input
@@ -75,9 +84,15 @@ export default function Login(){
                 name='password'
                 value={form.senha}
                 placeholder='senha'
+                disabled={disabled}
                 required/>
 
-                <Button>Entrar</Button>
+                {loading ? <ButtonFacke><ThreeDots
+                 color="#FFFFFF"
+                 height={13}
+                 width={51}
+                 marginLefit={30}
+                 /></ButtonFacke> : <Button type='submit'>Entrar</Button>}
 
              </Form>
 

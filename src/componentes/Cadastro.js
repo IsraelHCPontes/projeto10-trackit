@@ -2,14 +2,17 @@ import { useState, } from "react"
 import { Link,useNavigate, useParams } from "react-router-dom"
 import styled from "styled-components"
 import Logo from "../Assets/img/Logo.svg"
-import Button from '../componentes/common/Button'
+import {Button, ButtonFacke} from '../componentes/common/Button'
 import Form from "./common/Form"
 import RodaPe from "./common/RodaPe"
 import { postCadastro } from "../services/Trackit"
+import { ThreeDots } from  'react-loader-spinner'
 
 
 
 export default function Cadastro(){
+    const [loading, setLoading] = useState(false)
+    const [disabled, setDesibled] = useState(false)
 
     const { cadastro } = useParams()
 
@@ -39,7 +42,13 @@ export default function Cadastro(){
             ...form
         }
 
-        postCadastro(body).catch(({response}) => alert(response.data.message))
+        setLoading(true)
+        setDesibled(true)
+
+        postCadastro(body).catch(({response}) => {
+        alert(response.data.message);
+        setLoading(false);
+        setDesibled(false)})
 
         postCadastro(body).then(res => {console.log('deu bom', res); navigate('/');setForm({ 
         email: '',
@@ -64,6 +73,7 @@ export default function Cadastro(){
                 name='email'
                 value={form.email}
                 placeholder='email'
+                disabled={disabled}
                 required/>
                 
                 <input
@@ -73,6 +83,7 @@ export default function Cadastro(){
                 name='password'
                 value={form.password}
                 placeholder='password'
+                disabled={disabled}
                 required/>
 
                 <input
@@ -82,6 +93,7 @@ export default function Cadastro(){
                 name='name'
                 value={form.name}
                 placeholder='nome'
+                disabled={disabled}
                 required/>
                 
                 <input
@@ -91,9 +103,16 @@ export default function Cadastro(){
                 name='image'
                 value={form.image}
                 placeholder='image'
+                disabled={disabled}
                 required/>
 
-                <Button>Cadastrar</Button>
+                {loading ? <ButtonFacke><ThreeDots
+                 color="#FFFFFF"
+                 height={13}
+                 width={51}
+                 marginLefit={30}
+                 /></ButtonFacke> :
+                <Button>Cadastrar</Button>}
 
              </Form>
 

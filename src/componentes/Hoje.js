@@ -1,22 +1,30 @@
 import styled from 'styled-components';
 import check from '../Assets/img/check.svg'
-import { getBuscaHabitosHoje} from '../services/Trackit'
-import { useState, useEffect } from 'react';
+import { getBuscaHabitosHoje, postCheckHabitos, postUncheckHabitos} from '../services/Trackit'
+import { useState, useEffect, useContext } from 'react';
 import dayjs from "dayjs"
+import {UserContext} from '../contexts/UserContext';
 
 
 export default function Hoje(){
-    const [botaoClickado, setBotaoClickado] = useState(false)
+    
     const [listaHabitos, setListaHabitos] = useState([])
     const [atualiza, setAtualiza] = useState(false)  
     const [diaSemana, setDiaSemana] = useState("")
     
+    
+    const {quantHabitosHJ,
+          habitosHjCheck,
+          setQuantHabitosHJ,
+          setHabitosHjCheck
+          } = useContext(UserContext)
 
     useEffect(() => {
         getBuscaHabitosHoje().then((res)=>
         {setListaHabitos([...res.data]);
         })},[])  
 
+       
 
     useEffect(()=>{
 
@@ -55,47 +63,88 @@ export default function Hoje(){
 
     },[])
 
-    function HabitosHoje({name, currentSequence, highestSequence}){
-        const [clicked, setClicked] = useState(false)
-        return (
-            <BoxHabitos>
-                <Conteudo>
-                    <Esquerda>
-                            <h1>{name}</h1>
-                            <h3>Sequência atual: {currentSequence} dias</h3> 
-                            <h3>Seu recorde: {highestSequence} dias</h3>
-                    </Esquerda>
-                    <Direita
-                    clicked={clicked}
-                    setClicked={setClicked}
-                    onClick={()=> setClicked(!clicked)}>
-                        <img src={check}/>
-                    </Direita>
-                </Conteudo>
-            </BoxHabitos>
-        )
-    }
+    
+    
+    setQuantHabitosHJ(listaHabitos.length)
 
-        console.log(listaHabitos)
+    setHabitosHjCheck((listaHabitos.filter(({done}) => done)).length)
+
+    const percentage = ((listaHabitos.filter(({done}) => done).length / listaHabitos.length) * 100).toFixed(0)
+
+        
     return(
         <Wrapper>
             <Topo>
             <h1>{diaSemana}, {dayjs().format('DD/MM')}</h1>
-            <h2>Nenhum hábito concluído ainda</h2>
+            {habitosHjCheck > 0 ?
+            <TitlePercentage habitosHjCheck={habitosHjCheck}>{percentage}% dos hábitos concluídos</TitlePercentage>
+            :
+            <TitlePercentage habitosHjCheck={habitosHjCheck}>Nenhum hábito concluído ainda</TitlePercentage>}
             </Topo>
            <ContainerHabitos>
 
-           {listaHabitos.map(({name,currentSequence, highestSequence})=>
+           {listaHabitos.map(({
+            name,currentSequence, highestSequence, id, done, atualiza, setAtualiza})=>
            <HabitosHoje
            highestSequence={highestSequence}
            currentSequence={currentSequence}
-           name={name} />)}
+           name={name} 
+           id={id}
+           done={done}
+           atualiza={atualiza}
+           setAtualiza={setAtualiza}
+           />)}
 
            </ContainerHabitos>
         </Wrapper>
     )
 }
 
+function HabitosHoje({
+    name,
+    currentSequence,
+    highestSequence,
+    id,
+    done,
+    atualiza,
+    setAtualiza}){
+
+    const [clicked, setClicked] = useState(false)
+    console.log(done)
+
+      
+    function sendCheck({id, done}) {
+        if (done === false) {
+            postCheckHabitos({id}).then((res => {console.log('CHECKOU') ;setAtualiza(!atualiza)}))
+            postCheckHabitos({id}).catch((res) => {console.log('naoCHECKOU')})
+        }
+
+        if (done === true) {
+            postUncheckHabitos({id}).then((res => {console.log('UNCHECKOU') ;setAtualiza(!atualiza) }))
+            postUncheckHabitos({id}).catch((res) => {console.log('naoUNCHECKOU')})
+        }
+    }
+
+    
+    return (
+        <BoxHabitos>
+            <Conteudo>
+                <Esquerda>
+                        <h1>{name}</h1>
+                        <Sequencia currentSequence={currentSequence} highestSequence={highestSequence}>Sequência atual: <span>{currentSequence} dias</span></Sequencia> 
+                        <Recorde currentSequence={currentSequence} highestSequence={highestSequence}>Seu recorde: <span>{highestSequence} dias</span></Recorde>
+                </Esquerda>
+                <Direita
+                clicked={clicked}
+                setClicked={setClicked}
+                done={done}
+                onClick={()=> {sendCheck({id, done})}}>
+                    <img src={check}/>
+                </Direita>
+            </Conteudo>
+        </BoxHabitos>
+    )
+}
 
 const Wrapper = styled.div`
     margin-top:98px;
@@ -113,15 +162,15 @@ const Topo = styled.div`
     color:#126BA5;
     }
 
-    h2{
+`
+const TitlePercentage = styled.h2`
         font-family: Lexend Deca;
         font-size: 18px;
         font-weight: 400;
         line-height: 22px;
         letter-spacing: 0em;
         text-align: left;
-        color: #BABABA;
-    }
+        color: ${({habitosHjCheck }) => habitosHjCheck > 0 ? '#8FC549':'#BABABA'};
 `
 
 const ContainerHabitos = styled.div`
@@ -158,8 +207,8 @@ const Esquerda = styled.div`
         color:#666666;
         margin-bottom:7px;
     }
-
-    h3{
+`
+const Sequencia = styled.h3`
         font-family: Lexend Deca;
         font-size: 13px;
         font-weight: 400;
@@ -167,8 +216,29 @@ const Esquerda = styled.div`
         letter-spacing: 0em;
         text-align: left;
         color:#666666;
+        span{
+          color: ${({currentSequence, highestSequence}) =>
+         currentSequence == highestSequence 
+         ?
+        '#8FC549': '#666666'}
+        }
+`
 
-    }
+const Recorde = styled.h3`
+         font-family: Lexend Deca;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 16px;
+        letter-spacing: 0em;
+        text-align: left;
+        color:#666666;
+        span{
+            color:${({currentSequence, highestSequence}) => 
+            currentSequence == highestSequence 
+            ?
+            '#8FC549':
+             '#666666'} 
+        }
 `
 
 const Direita = styled.div`
@@ -177,7 +247,7 @@ const Direita = styled.div`
     left: 276px;
     top: 190px;
     border-radius: 5px;
-    background-color:${({clicked})=>clicked ? '#8FC549' : '#EBEBEB'};
+    background-color:${({done})=> done ? '#8FC549' : '#EBEBEB'};
     display: flex;
     justify-content: center;
     align-items: center;

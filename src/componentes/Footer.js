@@ -1,16 +1,19 @@
 import styled from "styled-components"
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import { useNavigate } from "react-router-dom";
+import BotaoHj from "./BotaoHj";
 
 export default function Footer(){
+    let navigate = useNavigate()
+    
    return(
    <Wrapper>
-        <Habitos>Hábitos</Habitos> 
-        <Percentagem></Percentagem>
+        <Habitos onClick={()=>navigate('/habitos')}>Hábitos</Habitos> 
+            <BotaoHj/>
         <Historico>Histórico</Historico>
     </Wrapper>
    )
 }
-
-
 
 
 const Wrapper = styled.div`

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { getListarHabitos} from '../services/Trackit'
 import BoxNewHabitos from './NewHabitos';
 import ListaHabitos from './ListaHabitos';
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -11,7 +12,7 @@ const dias = ['D', 'S', 'T', 'Q','Q','S','S']
 const [botaoClickado, setBotaoClickado] = useState(false)
 const [listaHabitos, setListaHabitos] = useState([])
 const [atualiza, setAtualiza] = useState(false)  
-
+let navigate = useNavigate()
 
     useEffect(() => {
         getListarHabitos().then((res)=>
